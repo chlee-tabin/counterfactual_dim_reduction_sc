@@ -1,7 +1,7 @@
-def conditional_pearson_residuals_pandas(Y, batch_labels):
+def conditional_pearson_residuals_pandas(Y, batch_label):
     """
     Y: numpy matrix rows: cells, columns:genes
-    batch_labels: python list of batch labels
+    batch_label: python list of batch labels
     Current implementation is not optimal due to use of pandas
     """
     df_mtx = pd.DataFrame(Y)
