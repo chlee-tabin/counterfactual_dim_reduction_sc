@@ -10,7 +10,7 @@ def conditional_pearson_residuals_pandas(Y, batch_label):
     df_sum_y_bij = df_mtx.groupby(batch_label).sum()
     
     # calculate \pi_{bij}
-    df_pi_bij_nonormed = df_mtx_used.sum(axis=1)
+    df_pi_bij_nonormed = df_mtx.sum(axis=1)
     df_pi_bij = df_pi_bij_nonormed.values / df_pi_bij_nonormed.groupby(batch_label).sum().loc[batch_label].values
     
     # calculate \mu_{bij} and \sigma^2_{bij}
