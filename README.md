@@ -8,6 +8,5 @@ Our method (and also the implementation) is extremely fast and efficient.
 It fully supports `scipy` `sparse` functionality and never invokes a large dense matrix.
 For example, PCA is performed by calculating the covariance matrix of the residual matrix without actually calculating it.
 
-Please [e-mail](hanbin973@snu.ac.kr) me if you use our method for your work.
+Please [e-mail](mailto:hanbin973@snu.ac.kr) me if you use our method for your work.
 Use it at your own risk.
-
