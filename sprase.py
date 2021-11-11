@@ -34,3 +34,32 @@ def get_residual_variance_sparse(mtx, batch_label, block_size=100):
         resid_vars[idx_start:idx_end] = resid.var(axis=1)    
     
     return resid_vars
+
+def pca_conditional_residual_sparse(mtx, batch_label):
+    mtx_csr = mtx.tocsr()
+    r_r_T = np.zeros((mtx_csr.shape[0], mtx_csr.shape[0]))
+    # loop for each batch
+    for b in np.unique(batch_label):
+        mtx_active = mtx_csr[:, batch_label == b]
+        mtx_coo = mtx_active.tocoo()
+
+        # compute n_bio, n_boj, n_boo
+        n_bio = np.array(mtx_active.sum(axis=0))[0]
+        n_boj = np.array(mtx_active.sum(axis=1)).flatten()
+        n_boo = n_boj.sum()
+
+        # compute Y Y^T
+        var = n_boj[mtx_coo.row] * n_bio[mtx_coo.col] / n_boo * (1 - n_bio[mtx_coo.col] / n_boo)
+        mtx_div_sigma = sparse.csr_matrix((mtx_active.data / np.sqrt(var), mtx_active.indices, mtx_active.indptr))
+        mtx_mtx_T = mtx_div_sigma @ mtx_div_sigma.T
+
+        # oompute Y mu^T
+        p_bio = n_bio / n_boo
+        mtx_mu_T = mtx_div_sigma.dot(np.sqrt(p_bio * (1-p_bio)))[:,None] @ np.sqrt(n_boj)[None,:]
+
+        # compute mu mu^T
+        mu_mu_T = (p_bio / (1 - p_bio)).sum() * np.sqrt(n_boj[:,None] @ n_boj[None,:])
+
+        r_r_T += mtx_mtx_T - 2 * mtx_mu_T + mu_mu_T
+    
+    return r_r_T
